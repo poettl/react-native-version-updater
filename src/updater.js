@@ -1,6 +1,6 @@
 const plist = require("plist");
 const fs = require("fs");
-const { findPlistFiles } = require("./utils");
+const { findFiles } = require("./utils");
 
 // *PACKAGE.JSON*
 const updatePackageJsonVersion = (versionMode) => {
@@ -36,7 +36,7 @@ const updatePackageJsonVersion = (versionMode) => {
 // *IOS*
 const updateIosVersion = (newVersion) => {
   // .plist inside ios folder or subfolders
-  const plistFiles = findPlistFiles("./ios");
+  const plistFiles = findFiles("./ios", ".plist");
 
   // check if plist files contain CFBundleShortVersionString key and update it
   plistFiles.forEach((file) => {
@@ -49,6 +49,22 @@ const updateIosVersion = (newVersion) => {
     fs.writeFileSync(file, plist.build(plistObject));
     console.log(`Version updated to ${newVersion} in ${file}`);
   });
+
+  // project.pbxproj inside ios folder
+  const projectPbxproj = findFiles("./ios", ".pbxproj")[0];
+  if (!projectPbxproj) {
+    console.error("project.pbxproj not found");
+    return;
+  } else {
+    const projectPbxprojFile = fs.readFileSync(projectPbxproj, "utf8");
+    const versionNameRegex = /MARKETING_VERSION = (.*)/g;
+    const newProjectPbxprojFile = projectPbxprojFile.replace(
+      versionNameRegex,
+      `MARKETING_VERSION = ${newVersion};`
+    );
+    fs.writeFileSync(projectPbxproj, newProjectPbxprojFile);
+    console.log(`Version updated to ${newVersion} in ${projectPbxproj}`);
+  }
 };
 
 // *ANDROID*

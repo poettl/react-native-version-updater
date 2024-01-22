@@ -20,4 +20,4 @@ if (newVersion) {
   updateAndroidVersion(newVersion);
 }
 
-console.log("Version updated successfully to", newVersion + " 🎉");
+console.log("App updated successfully to", newVersion + " 🎉");

@@ -1,7 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 
-function findPlistFiles(directory, plistFiles = []) {
+function findFiles(directory, extension, foundFiles = []) {
   const files = fs.readdirSync(directory);
 
   for (const file of files) {
@@ -11,16 +11,16 @@ function findPlistFiles(directory, plistFiles = []) {
     // exclude ios/build folder and ios/Pods folder
     if (stats.isDirectory() && file !== "build" && file !== "Pods") {
       // If it's a directory, recursively search inside it
-      findPlistFiles(filePath, plistFiles);
-    } else if (file.endsWith(".plist")) {
+      findFiles(filePath, extension, foundFiles);
+    } else if (file.endsWith(extension)) {
       // If it's a file with a .plist extension, add its path to the array
-      plistFiles.push(filePath);
+      foundFiles.push(filePath);
     }
   }
 
-  return plistFiles;
+  return foundFiles;
 }
 
 module.exports = {
-  findPlistFiles,
+  findFiles,
 };

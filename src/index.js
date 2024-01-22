@@ -12,12 +12,12 @@ const argv = yargs.option("versionMode", {
   type: "string",
   choices: ["major", "minor", "patch"],
   default: "patch",
-});
+}).argv;
 
-const versionMode = argv.version;
-
-const newVersion = updatePackageJsonVersion(versionMode);
+const newVersion = updatePackageJsonVersion(argv.versionMode);
 if (newVersion) {
   updateIosVersion(newVersion);
   updateAndroidVersion(newVersion);
 }
+
+console.log("Version updated successfully to", newVersion + " 🎉");

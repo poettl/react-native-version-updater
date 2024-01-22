@@ -1,7 +1,7 @@
 const plist = require("plist");
 const fs = require("fs");
 
-export const updatePackageJsonVersion = (versionMode) => {
+const updatePackageJsonVersion = (versionMode) => {
   const packageJson = JSON.parse(fs.readFileSync("./package.json"));
   if (!packageJson.version) {
     console.error("No version found in package.json");
@@ -21,7 +21,7 @@ export const updatePackageJsonVersion = (versionMode) => {
   };
 
   // update version in package.json
-  versionUpdate && console.log(`Version updated to ${newVersion[versionMode]}`);
+  console.log(`Version updated to ${newVersion[versionMode]}`);
 
   // update package.json
   packageJson.version = newVersion[versionMode];
@@ -29,7 +29,7 @@ export const updatePackageJsonVersion = (versionMode) => {
   return newVersion[versionMode];
 };
 
-export const updateIosVersion = (newVersion) => {
+const updateIosVersion = (newVersion) => {
   // *.plist inside ios folder
 
   const plistFiles = fs
@@ -51,11 +51,11 @@ export const updateIosVersion = (newVersion) => {
     }
     plistObject.CFBundleShortVersionString = newVersion;
     fs.writeFileSync(`./ios/${file}`, plist.build(plistObject));
-    versionUpdate && console.log(`Version updated to ${newVersion} in ${file}`);
+    console.log(`Version updated to ${newVersion} in ${file}`);
   });
 };
 
-export const updateAndroidVersion = (newVersion) => {
+const updateAndroidVersion = (newVersion) => {
   // build.gradle inside android folder
 
   const buildGradle = fs.readFileSync("./android/app/build.gradle", "utf8");
@@ -79,7 +79,7 @@ export const updateAndroidVersion = (newVersion) => {
   // update versionName according to the version mode
 
   // update versionName in build.gradle
-  versionUpdate && console.log(`Version updated to ${newVersion}`);
+  console.log(`Version updated to ${newVersion}`);
 
   // update build.gradle
 
@@ -106,7 +106,7 @@ export const updateAndroidVersion = (newVersion) => {
   const newVersionCode = parseInt(versionCode) + 1;
 
   // update versionCode in build.gradle
-  versionUpdate && console.log(`Version updated to ${newVersionCode}`);
+  console.log(`Version updated to ${newVersionCode}`);
 
   // update build.gradle
 
@@ -115,4 +115,10 @@ export const updateAndroidVersion = (newVersion) => {
   fs.writeFileSync("./android/app/build.gradle", newBuildGradle2);
 
   console.log("Version updated successfully to", newVersion + "🎉");
+};
+
+module.exports = {
+  updatePackageJsonVersion,
+  updateIosVersion,
+  updateAndroidVersion,
 };

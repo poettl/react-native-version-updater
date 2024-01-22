@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-import {
+const {
   updatePackageJsonVersion,
   updateIosVersion,
   updateAndroidVersion,
-} from "./updater.js";
+} = require("./updater");
 const yargs = require("yargs");
 
 const argv = yargs.option("versionMode", {
@@ -17,5 +17,7 @@ const argv = yargs.option("versionMode", {
 const versionMode = argv.version;
 
 const newVersion = updatePackageJsonVersion(versionMode);
-updateIosVersion(newVersion);
-updateAndroidVersion(newVersion);
+if (newVersion) {
+  updateIosVersion(newVersion);
+  updateAndroidVersion(newVersion);
+}

@@ -77,16 +77,46 @@ const updateAndroidVersion = (newVersion) => {
   // versionCode 9
   const versionNameRegex = /versionName\s"(.*)"/g;
   const versionCodeRegex = /versionCode\s(.*)/g;
-  const versionName = versionNameRegex.exec(buildGradle)[1];
-  const versionCode = versionCodeRegex.exec(buildGradle)[1];
+  // const versionCode = versionCodeRegex.exec(buildGradle)[1];
 
   // update versionName and versionCode in build.gradle
-  const newBuildGradle = buildGradle
-    .replace(versionNameRegex, `versionName "${newVersion}"`)
-    .replace(versionCodeRegex, `versionCode ${parseInt(versionCode) + 1}`);
+  const newBuildGradle = buildGradle.replace(
+    versionNameRegex,
+    `versionName "${newVersion}"`
+  );
+  // .replace(versionCodeRegex, `versionCode ${parseInt(versionCode) + 1}`);
 
   fs.writeFileSync("./android/app/build.gradle", newBuildGradle);
   console.log("VersionName updated to ", newVersion);
+  console.log("VersionCode updated to ", parseInt(versionCode) + 1);
+};
+
+const updateAndroidVersionCode = (flavor) => {
+  // build.gradle inside android folder
+  const gradleContent = fs.readFileSync("path/to/your/build.gradle", "utf8");
+
+  // Define a regular expression pattern to match the versionCode for the specified flavor
+  const pattern = new RegExp(
+    `${flavor}\\s*\\{[\\s\\S]*?versionCode\\s(\\d+)`,
+    "m"
+  );
+  const match = gradleContent.match(pattern);
+  let versionCode = "";
+
+  if (match && match[1]) {
+    // Extract the versionCode
+    versionCode = parseInt(match[1], 10);
+  } else {
+    console.error(`VersionCode not found for flavor: ${flavor}`);
+    return null;
+  }
+
+  const newBuildGradle = buildGradle.replace(
+    versionCodeRegex,
+    `versionCode ${parseInt(versionCode) + 1}`
+  );
+
+  fs.writeFileSync("./android/app/build.gradle", newBuildGradle);
   console.log("VersionCode updated to ", parseInt(versionCode) + 1);
 };
 
@@ -94,4 +124,5 @@ module.exports = {
   updatePackageJsonVersion,
   updateIosVersion,
   updateAndroidVersion,
+  updateAndroidVersionCode,
 };

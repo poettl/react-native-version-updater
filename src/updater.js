@@ -76,8 +76,6 @@ const updateAndroidVersion = (newVersion) => {
   // versionName "1.0.4"
   // versionCode 9
   const versionNameRegex = /versionName\s"(.*)"/g;
-  const versionCodeRegex = /versionCode\s(.*)/g;
-  // const versionCode = versionCodeRegex.exec(buildGradle)[1];
 
   // update versionName and versionCode in build.gradle
   const newBuildGradle = buildGradle.replace(
@@ -93,14 +91,14 @@ const updateAndroidVersion = (newVersion) => {
 
 const updateAndroidVersionCode = (flavor) => {
   // build.gradle inside android folder
-  const gradleContent = fs.readFileSync("path/to/your/build.gradle", "utf8");
+  const buildGradle = fs.readFileSync("./android/app/build.gradle", "utf8");
 
   // Define a regular expression pattern to match the versionCode for the specified flavor
   const pattern = new RegExp(
     `${flavor}\\s*\\{[\\s\\S]*?versionCode\\s(\\d+)`,
     "m"
   );
-  const match = gradleContent.match(pattern);
+  const match = buildGradle.match(pattern);
   let versionCode = "";
 
   if (match && match[1]) {

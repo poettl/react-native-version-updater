@@ -86,36 +86,34 @@ const updateAndroidVersion = (newVersion) => {
 
   fs.writeFileSync("./android/app/build.gradle", newBuildGradle);
   console.log("VersionName updated to ", newVersion);
-  console.log("VersionCode updated to ", parseInt(versionCode) + 1);
 };
 
 const updateAndroidVersionCode = (flavor) => {
   // build.gradle inside android folder
   const buildGradle = fs.readFileSync("./android/app/build.gradle", "utf8");
 
-  // Define a regular expression pattern to match the versionCode for the specified flavor
-  const pattern = new RegExp(
-    `${flavor}\\s*\\{[\\s\\S]*?versionCode\\s(\\d+)`,
-    "m"
-  );
-  const match = buildGradle.match(pattern);
-  let versionCode = "";
+  const pattern = new RegExp(`${flavor}\\s*{[^{}]*}`, "gm");
+  const match = pattern.exec(buildGradle);
 
-  if (match && match[1]) {
-    // Extract the versionCode
-    versionCode = parseInt(match[1], 10);
+  if (match) {
+    const flavorBlock = match[0];
+    const versionCodeRegex = /versionCode\s(.*)/g;
+    const versionCodeMatch = versionCodeRegex.exec(flavorBlock);
+    if (versionCodeMatch) {
+      const versionCode = versionCodeMatch[1];
+      const updatedFlavorBlock = flavorBlock.replace(
+        versionCodeRegex,
+        `versionCode ${parseInt(versionCode) + 1}`
+      );
+      const updatedData = buildGradle.replace(flavorBlock, updatedFlavorBlock);
+      fs.writeFileSync("./android/app/build.gradle", updatedData);
+      console.log("VersionCode updated to ", parseInt(versionCode) + 1);
+    } else {
+      console.error(`versionCode not found in flavor ${flavor}`);
+    }
   } else {
-    console.error(`VersionCode not found for flavor: ${flavor}`);
-    return null;
+    console.error(`Flavor ${flavor} not found in build.gradle`);
   }
-
-  const newBuildGradle = buildGradle.replace(
-    versionCodeRegex,
-    `versionCode ${parseInt(versionCode) + 1}`
-  );
-
-  fs.writeFileSync("./android/app/build.gradle", newBuildGradle);
-  console.log("VersionCode updated to ", parseInt(versionCode) + 1);
 };
 
 module.exports = {
